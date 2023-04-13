@@ -33,7 +33,13 @@ $ npm run build && serverless deploy
 ```
 ![My Image](screenshots/deploy.png)
 
-
+## Documentación
 Documentación en [Postman](https://documenter.getpostman.com/view/11052226/2s93Xwxi1w)
 
 https://documenter.getpostman.com/view/11052226/2s93Xwxi1w
+
+## Pruebas unitarias
+Para ejecutar pruebas ingresar el siguiente comando
+```bash
+$ npm run test
+```
