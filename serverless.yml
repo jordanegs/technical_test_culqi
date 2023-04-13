@@ -35,19 +35,16 @@ provider:
     NODE_OPTIONS: --enable-source-maps --stack-trace-limit=1000
     DYNAMODB_ENDPOINT: 'http://localhost:8000'
     SQS_ENDPOINT: 'https://sqs.us-east-1.amazonaws.com/957022602936/TestDataQueue'
+    EVENT_BRIDGE_SOURCE: 'jordan.culqi.insert.input'
+    EVENT_BRIDGE_DETAIL_TYPE: 'Insert Test Data'
 
   iam:
     role:
       statements:
         - Effect: 'Allow'
           Action:
-            - 'dynamodb:DescribeTable'
-            - 'dynamodb:Query'
-            - 'dynamodb:Scan'
             - 'dynamodb:GetItem'
             - 'dynamodb:PutItem'
-            - 'dynamodb:UpdateItem'
-            - 'dynamodb:DeleteItem'
             - 'sqs:SendMessage'
             - 'sqs:ReceiveMessage'
           Resource:
