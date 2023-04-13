@@ -13,8 +13,8 @@ export class EventBridgeService {
     const params = {
       Entries: [
         {
-          Source: 'jordan.culqi.insert.input',
-          DetailType: 'Insert Test Data',
+          Source: process.env.EVENT_BRIDGE_SOURCE,
+          DetailType: process.env.EVENT_BRIDGE_DETAIL_TYPE,
           Detail: JSON.stringify(data),
           Time: new Date('TIMESTAMP'),
         },
