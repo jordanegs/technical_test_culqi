@@ -1,0 +1,102 @@
+service: technicalTestCulqi
+plugins:
+  - serverless-plugin-optimize
+  - serverless-offline
+  - serverless-dynamodb-local
+
+functions:
+  app:
+    handler: dist/main.handler
+    events:
+      - http:
+          method: any
+          path: /{any+}
+          cors: true
+  queue:
+    handler: dist/queue.handler
+
+  dynamo:
+    handler: dist/dynamo.handler
+    events:
+      - stream:
+          type: dynamodb
+          arn: arn:aws:dynamodb:us-east-1:957022602936:table/ResultsGameTable/stream/2023-04-13T06:31:38.826
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+
+  apiGateway:
+    shouldStartNameWithService: true
+
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    NODE_OPTIONS: --enable-source-maps --stack-trace-limit=1000
+    DYNAMODB_ENDPOINT: 'http://localhost:8000'
+    SQS_ENDPOINT: 'https://sqs.us-east-1.amazonaws.com/957022602936/TestDataQueue'
+
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - 'dynamodb:DescribeTable'
+            - 'dynamodb:Query'
+            - 'dynamodb:Scan'
+            - 'dynamodb:GetItem'
+            - 'dynamodb:PutItem'
+            - 'dynamodb:UpdateItem'
+            - 'dynamodb:DeleteItem'
+            - 'sqs:SendMessage'
+            - 'sqs:ReceiveMessage'
+          Resource:
+            - arn:aws:dynamodb:us-east-1:*:table/ResultsGameTable
+            - arn:aws:sqs:us-east-1:*:TestDataQueue
+            - arn:aws:events:us-east-1:*:rule/insertTestData
+
+package:
+  patterns:
+    - '!README.md'
+    - '!.idea/**'
+    - '!src/**'
+    - '!test/**'
+    - '!e2e/**'
+    - '!.serverless/**'
+    - '!.serverless_plugins/**'
+
+custom:
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    target: node18
+    define: 'require.resolve: undefined'
+    platform: node
+    concurrency: 10
+
+  dynamodb:
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+
+    stages: dev
+
+resources:
+  Resources:
+    TodosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ResultsGameTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
