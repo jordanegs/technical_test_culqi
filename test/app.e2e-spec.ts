@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+import { AppModule } from '../src/app.module';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -15,10 +15,16 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  it('/game/input (POST)', () => {
+    const body = {
+      caseNumber: 1,
+      numPlayers: 3,
+      diceFaces: 'LR.CCR.L.RLLLCLR.LL..R...CLR.',
+    };
+    request(app.getHttpServer()).post('/game/input').send(body).expect(201);
+  });
+
+  it('/game/input (GET)', () => {
+    request(app.getHttpServer()).get('/game/input/id').expect(200);
   });
 });
